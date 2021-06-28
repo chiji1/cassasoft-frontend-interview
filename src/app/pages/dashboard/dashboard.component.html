@@ -1,0 +1,27 @@
+<!-- <app-dashboard-wrapper></app-dashboard-wrapper> -->
+<!-- <app-dashboard1></app-dashboard1> -->
+<!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore in iste optio impedit eos. Enim corrupti reprehenderit atque et autem ut accusantium vitae, molestiae eos assumenda, placeat, saepe ab. Qui commodi, dicta quam fuga incidunt autem, ipsa doloribus, facere odit eaque voluptatibus amet. Dolores quaerat qui, omnis mollitia consectetur, quo eius dignissimos itaque quae dolorem impedit eaque repellendus vitae! Obcaecati ea neque eos ut placeat. Eligendi cumque nostrum molestiae voluptate itaque id quia neque illo animi inventore, quod, accusantium facilis tempora explicabo. Magnam, ad delectus animi dignissimos inventore dolorem repellendus ipsum eius deserunt aperiam aspernatur vero omnis dolorum amet eum. -->
+<div class="row" *ngIf="(ingredients$ | async) as ingredients">
+    <div class="col-sm-12 col-lg-6">
+        <div class="card bg-danger p-3">
+            <div class="card-body">
+                    <h1 class="text-center"> {{ ingredients?.length }}</h1>
+            </div>
+            <div class="card-foot">
+                <h4 class="text-right"><i class="fa fa-pizza-slice"></i> Total Ingredients</h4>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-12 col-lg-6">
+        <div class="card p-3">
+            <div class="card-body">
+                <h1 class="text-center">{{ calculateDateOfLastActivity(ingredients) | date : 'short' }}</h1>
+            </div>
+            <div class="card-foot">
+                <h4 class="text-right"><i class="fa fa-calendar"></i> Last Activity</h4>
+            </div>
+        </div>
+    </div>
+</div>
