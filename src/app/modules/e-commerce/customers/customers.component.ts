@@ -57,7 +57,6 @@ export class CustomersComponent
   searchGroup: FormGroup;
   private subscriptions: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
   ingredients$: Observable<Ingredient[]>;
-  // ingredients$: BehaviorSubject<Ingredient[]> = new BehaviorSubject<Ingredient[]>([]);
 
   constructor(
     private fb: FormBuilder,

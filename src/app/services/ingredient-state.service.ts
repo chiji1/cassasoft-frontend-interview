@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment as env } from '../../environments/environment';
 import { Ingredient } from '../types/ingredients.type';
+import { formatImageUrl } from '../utils/function.util';
 import { IngredientRequestsService } from './ingredient-requests.service';
 
 @Injectable({
@@ -25,9 +26,7 @@ export class IngredientStateService implements OnDestroy {
             return res.payload.map((ingredient) => {
               return {
                 ...ingredient,
-                image: ingredient.image.startsWith(env.apiRoot) ?
-                  ingredient.image :
-                  `${env.apiRoot}/${ingredient.image}`,
+                image: formatImageUrl(ingredient?.image),
               }
             });
           })
@@ -54,9 +53,7 @@ export class IngredientStateService implements OnDestroy {
                 if(ing.id === ingredient.id) {
                   return { 
                     ...payload,
-                    image: payload.image.startsWith(env.apiRoot) ?
-                      payload.image :
-                      `${env.apiRoot}/${payload.image}`,
+                    image: formatImageUrl(payload?.image),
                   }
                 }
                 else {
@@ -80,9 +77,7 @@ export class IngredientStateService implements OnDestroy {
             ...this.ingredients$.value, 
             { 
               ...payload,
-              image: payload.image.startsWith(env.apiRoot) ?
-                  payload.image :
-                  `${env.apiRoot}/${payload.image}`,
+              image: formatImageUrl(payload?.image),
             }
           ];
           setTimeout(() => this.ingredients$.next(ingredients), 200);

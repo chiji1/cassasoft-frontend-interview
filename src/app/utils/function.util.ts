@@ -1,4 +1,7 @@
-export const convertFilesToBase64Strings = async (event: Event): Promise<string[]> => {
+import { environment as env } from '../../environments/environment';
+
+export const convertFilesToBase64Strings = async (event: Event)
+  : Promise<string[]> => {
     const base64Strings: string[] = [];
     const files: any = (event.target as HTMLInputElement).files;
     for (const file of files) {
@@ -11,3 +14,8 @@ export const convertFilesToBase64Strings = async (event: Event): Promise<string[
     }
     return base64Strings;
 };
+
+export const formatImageUrl = (imageUrl: string): string => {
+  return imageUrl?.startsWith(env.apiRoot) ?
+    imageUrl : `${env.apiRoot}/${imageUrl}`;
+}

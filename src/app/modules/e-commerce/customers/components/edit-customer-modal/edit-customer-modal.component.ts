@@ -7,7 +7,7 @@ import { CustomersService } from '../../../_services';
 import { CustomAdapter, CustomDateParserFormatter, getDateFromString } from '../../../../../_metronic/core';
 import { Ingredient, NutrientsEntity } from 'src/app/types/ingredients.type';
 import { IngredientRequestsService } from 'src/app/services/ingredient-requests.service';
-import { convertFilesToBase64Strings } from 'src/app/utils/function.util';
+import { convertFilesToBase64Strings, formatImageUrl } from 'src/app/utils/function.util';
 import { environment as env } from '../../../../../../environments/environment';
 import { IngredientStateService } from 'src/app/services/ingredient-state.service';
 
@@ -88,9 +88,7 @@ export class EditCustomerModalComponent implements OnInit, OnDestroy {
                   map(({ payload }) => {
                     return {
                       ...payload,
-                        image: payload.image.startsWith(env.apiRoot) ?
-                        payload.image :
-                        `${env.apiRoot}/${payload.image}`,
+                        image: formatImageUrl(payload?.image),
                     }
                   }),
                   tap((res) => {
