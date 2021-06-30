@@ -16,6 +16,7 @@ export const convertFilesToBase64Strings = async (event: Event)
 };
 
 export const formatImageUrl = (imageUrl: string): string => {
-  return imageUrl?.startsWith(env.apiRoot) ?
-    imageUrl : `${env.apiRoot}/${imageUrl}`;
-}
+  // return imageUrl?.startsWith(env.apiRoot) ?
+  //   imageUrl : `${env.apiRoot}/${imageUrl}`;
+  return imageUrl;
+};

@@ -8,7 +8,7 @@ export const environment = {
   USERDATA_KEY: 'authf649fc9a5f55',
   isMockEnabled: true,
   apiUrl: 'https://your-domain.com/api',
-  apiRoot: 'http://localhost:5000',
+  apiRoot: 'http://localhost:3000/dev',
   spoonocular: {
     apiRoot: 'https://api.spoonacular.com/food',
     apiKey: '3d01ebdfea1b4a4ca4dbf3aed3152c6c',

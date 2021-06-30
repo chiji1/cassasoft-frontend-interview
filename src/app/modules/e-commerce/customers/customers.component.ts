@@ -164,7 +164,7 @@ export class CustomersComponent
     this.edit(undefined);
   }
 
-  edit(id: number) {
+  edit(id) {
     const modalRef = this.modalService.open(EditCustomerModalComponent, { size: 'md' });
     modalRef.componentInstance.id = id;
     modalRef.result.then(() =>
