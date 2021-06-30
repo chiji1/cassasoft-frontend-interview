@@ -38,6 +38,7 @@ export class IngredientRequestsService {
                 .pipe(first());
   }
 
+
   put(ingredient: Ingredient): Observable<HttpSuccessRequest<Ingredient>> {
     const { fat, image, title, calories, carbohydrates } = ingredient;
     const formData: FormData = new FormData();
