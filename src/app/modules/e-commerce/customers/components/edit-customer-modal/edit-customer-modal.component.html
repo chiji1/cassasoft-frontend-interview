@@ -40,7 +40,7 @@
     </ng-container>
 
     <ng-container *ngIf="ingredient">
-      <form action="#" class="form form-label-right" [formGroup]="formGroup">
+      <form action="#" class="form form-label-right" #form [formGroup]="formGroup">
         <div class="form-group row">
           <div class="col-lg-12">
             <input type="file" accept="image/*" (change)="onChange($event)" />

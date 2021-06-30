@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbDateAdapter, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { EMPTY, of, Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import { Ingredient, NutrientsEntity } from 'src/app/types/ingredients.type';
 import { IngredientRequestsService } from 'src/app/services/ingredient-requests.service';
 import { convertFilesToBase64Strings } from 'src/app/utils/function.util';
 import { environment as env } from '../../../../../../environments/environment';
+import { IngredientStateService } from 'src/app/services/ingredient-state.service';
 
 const EMPTY_INGREDIENT: Ingredient = {
   id: undefined,
@@ -35,6 +36,7 @@ const EMPTY_INGREDIENT: Ingredient = {
 })
 export class EditCustomerModalComponent implements OnInit, OnDestroy {
   @Input() id: string;
+  @Output() ingredientCreated: EventEmitter<Ingredient> = new EventEmitter<Ingredient>();
   isLoading$;
   // customer: Customer;
   ingredient: Ingredient;
@@ -45,11 +47,13 @@ export class EditCustomerModalComponent implements OnInit, OnDestroy {
   hasError = false;
   hasSuccess = false;
   returnMessage = '';
+  @ViewChild('form') formEl: ElementRef;
 
   constructor(
     private customersService: CustomersService,
     private fb: FormBuilder, public modal: NgbActiveModal,
     private readonly ingredientReqSrv: IngredientRequestsService,
+    private readonly ingredientStateSrv: IngredientStateService,
     ) { }
 
   ngOnInit(): void {
@@ -81,10 +85,12 @@ export class EditCustomerModalComponent implements OnInit, OnDestroy {
       this.ingredientReqSrv
           .getSingle(this.id)
           .pipe(
-                  map((res) => {
+                  map(({ payload }) => {
                     return {
-                      ...res.payload,
-                      image: `${env.apiRoot}/${res.payload.image}`
+                      ...payload,
+                        image: payload.image.startsWith(env.apiRoot) ?
+                        payload.image :
+                        `${env.apiRoot}/${payload.image}`,
                     }
                   }),
                   tap((res) => {
@@ -131,38 +137,15 @@ export class EditCustomerModalComponent implements OnInit, OnDestroy {
     const { value: { title, imageUrl } } = this.formGroup;
     this.prepareIngredient();
     if (this.ingredient.id) {
-      const ingredientUpdatedSubscription: Subscription =
-      this.ingredientReqSrv
-         .put(this.ingredient)
-         .subscribe((res) => {
-           if (res.success) {
-             this.formGroup.reset();
-             this.base64Url = null;
-             this.hasSuccess = true;
-           } else {
-             this.hasError = true;
-           }
-           this.returnMessage = res.message;
-         });
-      this.subscriptions.push(ingredientUpdatedSubscription);
+      this.ingredientStateSrv.put(this.ingredient);
+      this.hasSuccess = true;
     } else {
-      this.subscriptions.push(
-        this.ingredientReqSrv
-            .post(title, imageUrl)
-            .subscribe((res) => {
-              console.log(res);
-              if (res.success) {
-                this.formGroup.reset();
-                this.base64Url = null;
-                this.hasSuccess = true;
-              } else {
-                this.hasError = true;
-              }
-              this.returnMessage = res.message;
-            })
-      );
-
+      this.ingredientStateSrv.add(title, imageUrl);
+      this.formGroup.reset();
+      this.base64Url = null;
+      this.hasSuccess = true;
     }
+    this.modal.dismiss();
   }
 
   private prepareIngredient() {

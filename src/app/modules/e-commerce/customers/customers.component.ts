@@ -1,8 +1,8 @@
 // tslint:disable:no-string-literal
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject,  Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { Observable,  Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CustomersService } from '../_services';
 import {
@@ -25,9 +25,9 @@ import { DeleteCustomersModalComponent } from './components/delete-customers-mod
 import { UpdateCustomersStatusModalComponent } from './components/update-customers-status-modal/update-customers-status-modal.component';
 import { FetchCustomersModalComponent } from './components/fetch-customers-modal/fetch-customers-modal.component';
 import { EditCustomerModalComponent } from './components/edit-customer-modal/edit-customer-modal.component';
-import { IngredientRequestsService } from 'src/app/services/ingredient-requests.service';
-import { Ingredient } from 'src/app/types/ingredients.type';
-import { environment as env } from '../../../../environments/environment';
+import { IngredientRequestsService } from '../../../services/ingredient-requests.service';
+import { Ingredient } from '../../../types/ingredients.type';
+import { IngredientStateService } from '../../../services/ingredient-state.service';
 
 @Component({
   selector: 'app-customers',
@@ -56,14 +56,15 @@ export class CustomersComponent
   filterGroup: FormGroup;
   searchGroup: FormGroup;
   private subscriptions: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
-  // ingredients$: Observable<Ingredient[]>;
-  ingredients$: BehaviorSubject<Ingredient[]> = new BehaviorSubject<Ingredient[]>([]);
+  ingredients$: Observable<Ingredient[]>;
+  // ingredients$: BehaviorSubject<Ingredient[]> = new BehaviorSubject<Ingredient[]>([]);
 
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
     public customerService: CustomersService,
     private readonly ingredientReqSrv: IngredientRequestsService,
+    private readonly ingredientStateSrv: IngredientStateService,
   ) { }
 
   // angular lifecircle hooks
@@ -84,24 +85,8 @@ export class CustomersComponent
   }
 
   loadData(): void {
-    const ingredientSubscription: Subscription =
-    this.ingredientReqSrv
-        .getAll()
-        .pipe(
-          map((res) => {
-            return res.payload.map((ingredient) => {
-              return {
-                ...ingredient,
-                image: ingredient.image.startsWith(env.apiRoot) ?
-                  ingredient.image :
-                  `${env.apiRoot}/${ingredient.image}`,
-              }
-            });
-          })
-        ).subscribe((res) => {
-          this.ingredients$.next(res);
-        });
-    this.subscriptions.push(ingredientSubscription);
+    this.ingredientStateSrv.getall();
+    this.ingredients$ = this.ingredientStateSrv.getState();
   }
 
   // filtration
@@ -194,18 +179,8 @@ export class CustomersComponent
     modalRef.componentInstance.id = id;
   }
 
-  // todo: refactor
   onDelete(id: string): void {
-    this.ingredientReqSrv
-        .delete(id)
-        .subscribe(({ success }) => {
-          if (success === true) {
-            this.ingredients$.subscribe((res) => {
-              const filteredIngredients = res.filter((ingredient) => ingredient.id !== id);
-              setTimeout(() => this.ingredients$.next(filteredIngredients), 200);
-            });
-          }
-        });
+    this.ingredientStateSrv.delete(id);
   }
 
   delete(id: number) {
