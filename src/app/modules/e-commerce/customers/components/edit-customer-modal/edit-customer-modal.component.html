@@ -1,0 +1,127 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <div class="modal-title h4" id="example-modal-sizes-title-lg">
+      <ng-container *ngIf="ingredient">
+        <ng-container *ngIf="ingredient.id">Edit</ng-container>
+        <ng-container *ngIf="!ingredient.id">Create</ng-container>
+        Ingredient
+        <ng-container *ngIf="ingredient.id"
+          >'{{ ingredient.title}}'</ng-container
+        >
+      </ng-container>
+    </div>
+  </div>
+  <div
+    class="overlay overlay-block cursor-default modal-body"
+    style="min-height: 404px"
+  >
+    <!-- begin::Alert error-->
+    <ng-container *ngIf="hasSuccess">
+      <div
+              class="mb-10 alert alert-custom alert-light-success alert-dismissible"
+      >
+        <div class="alert-text">{{returnMessage}}</div>
+      </div>
+    </ng-container>
+    <!-- end::Alert error-->
+    <!-- begin::Alert error-->
+    <ng-container *ngIf="hasError">
+      <div
+              class="mb-10 alert alert-custom alert-light-danger alert-dismissible"
+      >
+        <div class="alert-text">{{returnMessage}}</div>
+      </div>
+    </ng-container>
+    <!-- end::Alert error-->
+    <ng-container *ngIf="isLoading$ | async">
+      <div class="overlay-layer bg-transparent">
+        <div class="spinner spinner-lg spinner-success"></div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="ingredient">
+      <form action="#" class="form form-label-right" #form [formGroup]="formGroup">
+        <div class="form-group row">
+          <div class="col-lg-12">
+            <input type="file" accept="image/*" (change)="onChange($event)" />
+            <div class="col-lg-12 image-preview mt-10" *ngIf="base64Url">
+              <img [src]="base64Url" alt="Image" />
+            </div>
+          </div>
+          <div class="col-lg-12 mt-10">
+            <label class="form-label">Title</label>
+            <input
+              type="text"
+              class="form-control form-control-lg form-control-solid is-invalid"
+              name="title"
+              placeholder="Title"
+              autocomplete="off"
+              [class.is-invalid]="isControlInvalid('title')"
+              [class.is-valid]="isControlValid('title')"
+              formControlName="title"
+            />
+            <div class="valid-feedback" *ngIf="isControlValid('title')">
+             Title was entered correct
+            </div>
+            <div
+              class="invalid-feedback"
+              *ngIf="controlHasError('required', 'title')"
+            >
+              Title is required
+            </div>
+          </div>
+          <div class="col-lg-12 mt-10"
+           *ngIf="ingredient.id">
+            <button
+              (click)="loadNutrientData()"
+              type="button"
+              class="btn btn-primary btn-elevate">
+              Load data from API
+            </button>
+            <div [ngClass]="{ 'hidden-visually': !isNutrientLoaded }">
+              <div class="col-lg-12 mt-10">
+                <label class="form-label">Fat</label>
+                <input type="text"
+                  class="form-control form-control-lg form-control-solid"
+                  formControlName="fat" />
+              </div>
+
+              <div class="col-lg-12 mt-10">
+                <label class="form-label">Calories</label>
+                <input type="text"
+                  class="form-control form-control-lg form-control-solid"
+                  formControlName="calories" />
+              </div>
+
+              <div class="col-lg-12 mt-10">
+                <label class="form-label">Carbohydrates</label>
+                <input type="text"
+                  class="form-control form-control-lg form-control-solid"
+                  formControlName="carbohydrates" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-light btn-elevate mr-2"
+      (click)="modal.dismiss()"
+    >
+      Cancel
+    </button>
+    <ng-container *ngIf="ingredient">
+      <button
+        type="submit"
+        class="btn btn-primary btn-elevate"
+        (click)="save()"
+        [disabled]="formGroup.invalid"
+      >
+        Save
+      </button>
+    </ng-container>
+  </div>
+</div>
